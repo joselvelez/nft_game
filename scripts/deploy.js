@@ -34,52 +34,15 @@ const main = async () => {
         characterHP,
         // Character Attack damage values
         characterAttackDmg,
+        // Boss attributes
+        "Kim Jong-il",
+        "https://static.wikia.nocookie.net/teamamerica/images/c/c5/Kim-jong-il.png/revision/latest/scale-to-width-down/616?cb=20141102004837",
+        10000,
+        50
     );
 
     await contract.deployed();
     console.log("Team America Slayers Game contract deployed to ", contract.address);
-
-    /*
-        Mint a few test NFTs
-    */
-    let txn;
-    let returnedTokenUri;
-
-    txn = await contract.mintNewCharacterNFT(1);
-    await txn.wait();
-    // Get the value of the new NFT
-    returnedTokenUri = await contract.tokenURI(1);
-    console.log("Minting #1");
-
-    txn = await contract.mintNewCharacterNFT(2);
-    await txn.wait();
-    // Get the value of the new NFT
-    returnedTokenUri = await contract.tokenURI(2);
-    console.log("Minting #2");
-
-    txn = await contract.mintNewCharacterNFT(3);
-    await txn.wait();
-    // Get the value of the new NFT
-    returnedTokenUri = await contract.tokenURI(3);
-    console.log("Minting #3");
-
-    txn = await contract.mintNewCharacterNFT(4);
-    await txn.wait();
-    // Get the value of the new NFT
-    returnedTokenUri = await contract.tokenURI(4);
-    console.log("Minting #4");
-
-    txn = await contract.mintNewCharacterNFT(5);
-    await txn.wait();
-    // Get the value of the new NFT
-    returnedTokenUri = await contract.tokenURI(5);
-    console.log("Minting #5");
-
-    txn = await contract.mintNewCharacterNFT(6);
-    await txn.wait();
-    // Get the value of the new NFT
-    returnedTokenUri = await contract.tokenURI(6);
-    console.log("Token URI: ", returnedTokenUri);
 }
 
 const runMain = async () => {

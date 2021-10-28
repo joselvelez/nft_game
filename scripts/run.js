@@ -52,6 +52,10 @@ const main = async () => {
     // Get the value of the new NFT
     let returnedTokenUri = await gameContract.tokenURI(1);
     console.log("Token URI: ", returnedTokenUri);
+
+    // Attack the boss
+    txn = await gameContract.attackBoss(1);
+    await txn.wait();
 }
 
 const runMain = async () => {

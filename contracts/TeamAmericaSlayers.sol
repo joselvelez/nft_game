@@ -19,6 +19,10 @@ import "./libraries/Base64.sol";
 // Inherit from ERC721 standard NFT contract
 contract TeamAmericaSlayers is ERC721 {
 
+    // Events
+    event CharacterMinted(address minter, uint tokenId, uint characterIndex);
+    event AttackComplete(uint newBossHp, uint newPlayerHp);
+
     // struct to store character attributes
     struct CharacterAttributes {
         uint characterIndex;
@@ -72,7 +76,7 @@ contract TeamAmericaSlayers is ERC721 {
     ) 
     
     // Parent contract constructor that passes in the collection name and token symbol
-    ERC721("Team America Slayers", "TAS")
+    ERC721("Team America Slayers Beta", "TAS")
 
     {
         console.log("The is the Team America Slayers Game!");
@@ -142,6 +146,8 @@ contract TeamAmericaSlayers is ERC721 {
 
         // Increment the tokenId for next mint
         _tokenIds.increment();
+
+        emit CharacterMinted(msg.sender, newTokenId, _characterIndex);
     }
 
     // Function to dynamically set the NFT's attributes when called
@@ -182,5 +188,50 @@ contract TeamAmericaSlayers is ERC721 {
     function attackBoss(uint _tokenId) public {
         require(nftHolders[_tokenId] == msg.sender, "Only the owner of this NFT can use it.");
 
+        CharacterAttributes storage nftCharacterPlayed = nftCharacterAttributes[_tokenId];
+
+        console.log("\nPlayer w/ character %s is about to attack with %s HP and %s AD. \nGrab some popcorn!",
+            nftCharacterPlayed.name, nftCharacterPlayed.hp, nftCharacterPlayed.attackDamage);
+        console.log("The Boss %s has %s HP and %s AD...", bigBoss.name, bigBoss.hp, bigBoss.attackDamage);
+
+        require(nftCharacterPlayed.hp > 0, "Error: character has no HP. R.I.P.");
+        require(bigBoss.hp > 0, "Error: Looks like the big boss is out for good. Hang your hat and hit the beach!");
+
+        // allow player to attack the boss
+        if (bigBoss.hp < nftCharacterPlayed.attackDamage) {
+            bigBoss.hp = 0;
+        } else {
+            bigBoss.hp = bigBoss.hp - nftCharacterPlayed.attackDamage;
+        }
+
+        // allow boss to attack player
+        if (nftCharacterPlayed.hp < bigBoss.attackDamage) {
+            nftCharacterPlayed.hp = 0;
+        } else {
+            nftCharacterPlayed.hp = nftCharacterPlayed.hp - bigBoss.attackDamage;
+        }
+
+        if (nftCharacterPlayed.hp == 0) {
+            console.log("OOF! %s just got REKT by %s. GGs.", nftCharacterPlayed.name, bigBoss.name);
+        } else if (bigBoss.hp == 0) {
+            console.log("NOICE!!! %s just defeated %s. The world is safe again... or is it?", nftCharacterPlayed.name, bigBoss.name);
+        } else if (bigBoss.hp == 0 && nftCharacterPlayed.hp == 0) {
+            console.log("Whoao... both of these fools just floored each other. Game over for %s and %s", bigBoss.name, nftCharacterPlayed.name);
+        } else {
+            console.log("Battle results are in... Boss HP is %s and %s HP is %s. \nThat was a nailbiter! Nah, not really...", 
+                bigBoss.hp, nftCharacterPlayed.name, nftCharacterPlayed.hp);
+        }
+
+        emit AttackComplete(bigBoss.hp, nftCharacterPlayed.hp);
+    }
+
+    // Character Selection
+    function getAllDefaultCharacters() public view returns (CharacterAttributes[] memory) {
+        return defaultCharacters;
+    }
+
+    // Get the Boss Data
+    function getBigBoss() public view returns (BigBoss memory) {
+        return bigBoss;
     }
 }
