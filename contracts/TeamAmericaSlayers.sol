@@ -24,7 +24,7 @@ contract TeamAmericaSlayers is ERC721 {
     event AttackComplete(uint newBossHp, uint newPlayerHp);
 
     // struct to store character attributes
-    struct CharacterAttributes {
+    struct Character {
         uint characterIndex;
         string name;
         string imageURI;
@@ -53,13 +53,19 @@ contract TeamAmericaSlayers is ERC721 {
     Counters.Counter private _tokenIds;
 
     // array to store default attributes for our characters
-    CharacterAttributes[] defaultCharacters;
+    Character[] defaultCharacters;
+
+    // array of minted characters
+    Character[] mintedCharacters;
 
     // Store a mapping of each NFT to it's unique attributes struct
-    mapping(uint => CharacterAttributes) public nftCharacterAttributes;
+    mapping(uint => Character) public nftCharacterAttributes;
 
-    // Store a mapping of each NFT to its current holder
-    mapping(uint => address) public nftHolders;
+    // Store a mapping of each NFT to its current owner
+    mapping(uint => address) public assetToOwner;
+
+    // Store mapping of how many characters an owner has
+    mapping(address => uint) ownerAssetCount;
 
     constructor(
         // Character data passed into the contract constructor during initialization
@@ -95,7 +101,7 @@ contract TeamAmericaSlayers is ERC721 {
         // Iterate through the characters array and save their attributes to the
         // contract.
         for (uint i = 0; i < characterNames.length; i += 1) {
-            defaultCharacters.push(CharacterAttributes({
+            defaultCharacters.push(Character({
                 characterIndex: i,
                 name: characterNames[i],
                 imageURI: chacterImageURIs[i],
@@ -108,7 +114,7 @@ contract TeamAmericaSlayers is ERC721 {
                 lunchHour: 0
             }));
 
-            CharacterAttributes memory c = defaultCharacters[i];
+            Character memory c = defaultCharacters[i];
             console.log("Initialized %s w/ %s HP", c.name, c.hp);
         }
 
@@ -127,7 +133,7 @@ contract TeamAmericaSlayers is ERC721 {
         _safeMint(msg.sender, newTokenId);
 
         // Map the new NFT to its character attributes
-        nftCharacterAttributes[newTokenId] = CharacterAttributes({
+        nftCharacterAttributes[newTokenId] = Character({
             characterIndex: _characterIndex,
             name: defaultCharacters[_characterIndex].name,
             imageURI: defaultCharacters[_characterIndex].imageURI,
@@ -142,7 +148,7 @@ contract TeamAmericaSlayers is ERC721 {
         console.log("Minted NFT w/ TokenId %s using %s character.", newTokenId, defaultCharacters[_characterIndex].name);
 
         // Save new NFT owner to mapping
-        nftHolders[newTokenId] = msg.sender;
+        assetToOwner[newTokenId] = msg.sender;
 
         // Increment the tokenId for next mint
         _tokenIds.increment();
@@ -152,7 +158,7 @@ contract TeamAmericaSlayers is ERC721 {
 
     // Function to dynamically set the NFT's attributes when called
     function tokenURI(uint _tokenId) public view override returns (string memory) {
-        CharacterAttributes memory charAttributes = nftCharacterAttributes[_tokenId];
+        Character memory charAttributes = nftCharacterAttributes[_tokenId];
 
         string memory strHp = Strings.toString(charAttributes.hp);
         string memory strMaxHp = Strings.toString(charAttributes.maxHP);
@@ -186,9 +192,9 @@ contract TeamAmericaSlayers is ERC721 {
 
     // Attack boss function
     function attackBoss(uint _tokenId) public {
-        require(nftHolders[_tokenId] == msg.sender, "Only the owner of this NFT can use it.");
+        require(assetToOwner[_tokenId] == msg.sender, "Only the owner of this NFT can use it.");
 
-        CharacterAttributes storage nftCharacterPlayed = nftCharacterAttributes[_tokenId];
+        Character storage nftCharacterPlayed = nftCharacterAttributes[_tokenId];
 
         console.log("\nPlayer w/ character %s is about to attack with %s HP and %s AD. \nGrab some popcorn!",
             nftCharacterPlayed.name, nftCharacterPlayed.hp, nftCharacterPlayed.attackDamage);
@@ -226,12 +232,31 @@ contract TeamAmericaSlayers is ERC721 {
     }
 
     // Character Selection
-    function getAllDefaultCharacters() public view returns (CharacterAttributes[] memory) {
+    function getAllDefaultCharacters() public view returns (Character[] memory) {
         return defaultCharacters;
     }
 
     // Get the Boss Data
     function getBigBoss() public view returns (BigBoss memory) {
         return bigBoss;
+    }
+
+    // Get list of characters a wallet owns
+    function getListOfOwnedCharacters(address _owner) external view returns (uint[] memory) {
+        // setup a var to store the results of our search. Since we cannot have dynamic arrays
+        // in memory, we will create a new fixed array of size length that corresponds to the
+        // owner's number of owned characters.
+        // Docs: https://docs.soliditylang.org/en/v0.8.9/types.html?highlight=array#allocating-memory-arrays
+        uint[] memory _results = new uint[](ownerAssetCount[_owner]);
+        uint counter = 0;
+        for (uint i = 0; i < mintedCharacters.length; i++) {
+            if (assetToOwner[i] == _owner) {
+                // Since we can't push into a dynamic array, instead we set the values for each
+                // result, with the index based on the iterator.
+                _results[counter] = i;
+                counter ++;
+            }
+        }
+        return _results;
     }
 }
