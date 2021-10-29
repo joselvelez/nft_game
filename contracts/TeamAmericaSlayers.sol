@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 // Helper functions OpenZeppelin provides
 import "@openzeppelin/contracts/utils/Counters.sol";
-
+import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 // https://docs.openzeppelin.com/contracts/4.x/api/utils#Strings
 import "@openzeppelin/contracts/utils/Strings.sol";
 
@@ -18,7 +18,8 @@ import "./libraries/Base64.sol";
 
 // Inherit from ERC721 standard NFT contract
 contract TeamAmericaSlayers is ERC721 {
-
+    
+    using SafeMath for uint256;
     // Events
     event CharacterMinted(address minter, uint tokenId, uint characterIndex);
     event AttackComplete(uint newBossHp, uint newPlayerHp);
@@ -149,6 +150,9 @@ contract TeamAmericaSlayers is ERC721 {
 
         // Save new NFT owner to mapping
         assetToOwner[newTokenId] = msg.sender;
+
+        // Increment owner's asset count
+        ownerAssetCount[msg.sender] = ownerAssetCount[msg.sender].add(1);
 
         // Increment the tokenId for next mint
         _tokenIds.increment();
