@@ -263,4 +263,9 @@ contract TeamAmericaSlayers is ERC721 {
         }
         return _results;
     }
+
+    // Get character by id
+    function getCharacter(uint _id) public view returns (Character memory) {
+        return nftCharacterAttributes[_id];
+    }
 }
