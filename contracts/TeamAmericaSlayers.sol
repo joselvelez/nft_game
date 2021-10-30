@@ -59,6 +59,9 @@ contract TeamAmericaSlayers is ERC721 {
     // array of minted characters
     Character[] mintedCharacters;
 
+    // array of minted character ids
+    uint[] mintedCharacterIds;
+
     // Store a mapping of each NFT to it's unique attributes struct
     mapping(uint => Character) public nftCharacterAttributes;
 
@@ -153,6 +156,9 @@ contract TeamAmericaSlayers is ERC721 {
 
         // Increment owner's asset count
         ownerAssetCount[msg.sender] = ownerAssetCount[msg.sender].add(1);
+
+        // Add new NFT to mintedCharacters array
+        mintedCharacters.push(nftCharacterAttributes[newTokenId]);
 
         // Increment the tokenId for next mint
         _tokenIds.increment();
@@ -267,5 +273,25 @@ contract TeamAmericaSlayers is ERC721 {
     // Get character by id
     function getCharacter(uint _id) public view returns (Character memory) {
         return nftCharacterAttributes[_id];
+    }
+
+    // Before minting, check if user has already minted the selected default character
+    function checkIfDefaultMinted(uint _characterIndex) private view returns (bool) {
+        bool result;
+
+        for (uint i = 0; i < mintedCharacters.length; i++) {
+
+            uint currentMintedCharacterId = mintedCharacterIds[i];
+            Character memory currentMintedCharacter = nftCharacterAttributes[currentMintedCharacterId];
+            uint currentCharacterIndex = currentMintedCharacter.characterIndex;
+            address currentCharacterOwner = assetToOwner[currentMintedCharacterId];
+
+            if (currentCharacterOwner == msg.sender && currentCharacterIndex == _characterIndex) {
+                result = true;
+            } else {
+                result = false;
+            }
+        }
+        return result;
     }
 }
