@@ -259,7 +259,7 @@ contract TeamAmericaSlayers is ERC721 {
         // Docs: https://docs.soliditylang.org/en/v0.8.9/types.html?highlight=array#allocating-memory-arrays
         uint[] memory _results = new uint[](ownerAssetCount[_owner]);
         uint counter = 0;
-        for (uint i = 0; i < mintedCharacters.length; i++) {
+        for (uint i = 1; i <= mintedCharacters.length; i++) {
             if (assetToOwner[i] == _owner) {
                 // Since we can't push into a dynamic array, instead we set the values for each
                 // result, with the index based on the iterator.
