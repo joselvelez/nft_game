@@ -129,6 +129,7 @@ contract TeamAmericaSlayers is ERC721 {
     // Allow users to mint a new NFT character based on one of the selected
     // default characters available
     function mintNewCharacterNFT(uint _characterIndex) external {
+        require(checkIfDefaultMinted(_characterIndex) == false, "You have already minted this character.");
 
         // Get the current token ID and assign it to the new mint
         uint newTokenId = _tokenIds.current();
@@ -277,7 +278,7 @@ contract TeamAmericaSlayers is ERC721 {
 
     // Before minting, check if user has already minted the selected default character
     function checkIfDefaultMinted(uint _characterIndex) private view returns (bool) {
-        bool result;
+        bool result = false;
 
         for (uint i = 0; i < mintedCharacters.length; i++) {
 
