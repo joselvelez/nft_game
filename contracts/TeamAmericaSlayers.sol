@@ -161,6 +161,9 @@ contract TeamAmericaSlayers is ERC721 {
         // Add new NFT to mintedCharacters array
         mintedCharacters.push(nftCharacterAttributes[newTokenId]);
 
+        // Add new NFT id to mintedCharacterIds array
+        mintedCharacterIds.push(newTokenId);
+
         // Increment the tokenId for next mint
         _tokenIds.increment();
 
@@ -280,19 +283,23 @@ contract TeamAmericaSlayers is ERC721 {
     function checkIfDefaultMinted(uint _characterIndex) private view returns (bool) {
         bool result = false;
 
-        for (uint i = 0; i < mintedCharacters.length; i++) {
+        if (mintedCharacterIds.length == 0) {
+            return false;
+        } else {
+            for (uint i = 0; i < mintedCharacterIds.length; i++) {
+                uint currentMintedCharacterId = mintedCharacterIds[i];
+                Character memory currentMintedCharacter = nftCharacterAttributes[currentMintedCharacterId];
+                uint currentCharacterIndex = currentMintedCharacter.characterIndex;
+                address currentCharacterOwner = assetToOwner[currentMintedCharacterId];
 
-            uint currentMintedCharacterId = mintedCharacterIds[i];
-            Character memory currentMintedCharacter = nftCharacterAttributes[currentMintedCharacterId];
-            uint currentCharacterIndex = currentMintedCharacter.characterIndex;
-            address currentCharacterOwner = assetToOwner[currentMintedCharacterId];
-
-            if (currentCharacterOwner == msg.sender && currentCharacterIndex == _characterIndex) {
-                result = true;
-            } else {
-                result = false;
+                if (currentCharacterOwner == msg.sender && currentCharacterIndex == _characterIndex) {
+                    result = true;
+                    break;
+                } else {
+                    result = false;
+                }
             }
+            return result;
         }
-        return result;
     }
 }
