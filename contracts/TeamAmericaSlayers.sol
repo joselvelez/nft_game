@@ -33,8 +33,6 @@ contract TeamAmericaSlayers is ERC721 {
         uint maxHp;
         uint attackDamage;
         uint powerFactor;
-        uint daysOff;
-        uint lunchHour;
     }
 
     // Struct to store the boss attributes
@@ -86,7 +84,7 @@ contract TeamAmericaSlayers is ERC721 {
     ) 
     
     // Parent contract constructor that passes in the collection name and token symbol
-    ERC721("Team America Slayers Beta", "TAS")
+    ERC721("Team America Slayers", "TAS")
 
     {
         console.log("The is the Team America Slayers Game!");
@@ -112,10 +110,7 @@ contract TeamAmericaSlayers is ERC721 {
                 hp: characterHP[i],
                 maxHp: characterHP[i],
                 attackDamage: characterAttackDmg[i],
-                // these values below will be set randomly during mint
-                powerFactor: 0,
-                daysOff: 0,
-                lunchHour: 0
+                powerFactor: 0
             }));
 
             Character memory c = defaultCharacters[i];
@@ -124,6 +119,12 @@ contract TeamAmericaSlayers is ERC721 {
 
         // Set initial tokenId to 1, since default initial is zero
         _tokenIds.increment();
+    }
+
+    // Assign character power factor
+    function assignPowerFactor() private view returns (uint) {
+        uint powerFactor = (block.difficulty + block.timestamp) % 100;
+        return powerFactor;
     }
 
     // Allow users to mint a new NFT character based on one of the selected
@@ -136,6 +137,8 @@ contract TeamAmericaSlayers is ERC721 {
 
         // assign new NFT to caller's wallet address
         _safeMint(msg.sender, newTokenId);
+        
+        uint newCharacterPowerFactor = assignPowerFactor();
 
         // Map the new NFT to its character attributes
         nftCharacterAttributes[newTokenId] = Character({
@@ -145,9 +148,7 @@ contract TeamAmericaSlayers is ERC721 {
             hp: defaultCharacters[_characterIndex].hp,
             maxHp: defaultCharacters[_characterIndex].maxHp,
             attackDamage: defaultCharacters[_characterIndex].attackDamage,
-            powerFactor: defaultCharacters[_characterIndex].powerFactor,
-            daysOff: defaultCharacters[_characterIndex].daysOff,
-            lunchHour: defaultCharacters[_characterIndex].lunchHour
+            powerFactor: newCharacterPowerFactor
         });
 
         console.log("Minted NFT w/ TokenId %s using %s character.", newTokenId, defaultCharacters[_characterIndex].name);
@@ -178,8 +179,6 @@ contract TeamAmericaSlayers is ERC721 {
         string memory strMaxHp = Strings.toString(charAttributes.maxHp);
         string memory strAttackDamage = Strings.toString(charAttributes.attackDamage);
         string memory strPowerFactor = Strings.toString(charAttributes.powerFactor);
-        string memory strDaysOff = Strings.toString(charAttributes.daysOff);
-        string memory strLunchHour = Strings.toString(charAttributes.lunchHour);
 
         // Pack our NFT character's attributes into a json formatted string
         string memory json = Base64.encode(
@@ -190,8 +189,7 @@ contract TeamAmericaSlayers is ERC721 {
                         '"description":"Join Team America and save the world! Battle the fierce boss and get nothing for it, maybe a thumbs up...",',
                         '"image":"',charAttributes.imageURI,'",',
                         '"attributes":[{"trait_type":"Health Points", "value":',strHp,',"max_value":',strMaxHp,'},',
-                        '{"trait_type":"Attack Damage","value":',strAttackDamage,'},{"trait_type": "Power Factor","value":',strPowerFactor,'},',
-                        '{"trait_type":"Days Off","value":',strDaysOff,'},{"trait_type":"Lunch Hour","value":',strLunchHour,'}]}'
+                        '{"trait_type":"Attack Damage","value":',strAttackDamage,'},{"trait_type": "Power Factor","value":',strPowerFactor,'}]}'
                     )
                 )
             )
