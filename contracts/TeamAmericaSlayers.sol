@@ -30,7 +30,7 @@ contract TeamAmericaSlayers is ERC721 {
         string name;
         string imageURI;
         uint hp;
-        uint maxHP;
+        uint maxHp;
         uint attackDamage;
         uint powerFactor;
         uint daysOff;
@@ -110,7 +110,7 @@ contract TeamAmericaSlayers is ERC721 {
                 name: characterNames[i],
                 imageURI: chacterImageURIs[i],
                 hp: characterHP[i],
-                maxHP: characterHP[i],
+                maxHp: characterHP[i],
                 attackDamage: characterAttackDmg[i],
                 // these values below will be set randomly during mint
                 powerFactor: 0,
@@ -143,7 +143,7 @@ contract TeamAmericaSlayers is ERC721 {
             name: defaultCharacters[_characterIndex].name,
             imageURI: defaultCharacters[_characterIndex].imageURI,
             hp: defaultCharacters[_characterIndex].hp,
-            maxHP: defaultCharacters[_characterIndex].maxHP,
+            maxHp: defaultCharacters[_characterIndex].maxHp,
             attackDamage: defaultCharacters[_characterIndex].attackDamage,
             powerFactor: defaultCharacters[_characterIndex].powerFactor,
             daysOff: defaultCharacters[_characterIndex].daysOff,
@@ -175,7 +175,7 @@ contract TeamAmericaSlayers is ERC721 {
         Character memory charAttributes = nftCharacterAttributes[_tokenId];
 
         string memory strHp = Strings.toString(charAttributes.hp);
-        string memory strMaxHp = Strings.toString(charAttributes.maxHP);
+        string memory strMaxHp = Strings.toString(charAttributes.maxHp);
         string memory strAttackDamage = Strings.toString(charAttributes.attackDamage);
         string memory strPowerFactor = Strings.toString(charAttributes.powerFactor);
         string memory strDaysOff = Strings.toString(charAttributes.daysOff);
