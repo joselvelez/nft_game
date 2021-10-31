@@ -32,7 +32,6 @@ contract TeamAmericaSlayers is ERC721 {
         uint hp;
         uint maxHp;
         uint attackDamage;
-        uint powerFactor;
     }
 
     // Struct to store the boss attributes
@@ -109,8 +108,7 @@ contract TeamAmericaSlayers is ERC721 {
                 imageURI: chacterImageURIs[i],
                 hp: characterHP[i],
                 maxHp: characterHP[i],
-                attackDamage: characterAttackDmg[i],
-                powerFactor: 0
+                attackDamage: characterAttackDmg[i]
             }));
 
             Character memory c = defaultCharacters[i];
@@ -119,12 +117,6 @@ contract TeamAmericaSlayers is ERC721 {
 
         // Set initial tokenId to 1, since default initial is zero
         _tokenIds.increment();
-    }
-
-    // Assign character power factor
-    function assignPowerFactor() private view returns (uint) {
-        uint powerFactor = (block.difficulty + block.timestamp) % 100;
-        return powerFactor;
     }
 
     // Allow users to mint a new NFT character based on one of the selected
@@ -137,8 +129,6 @@ contract TeamAmericaSlayers is ERC721 {
 
         // assign new NFT to caller's wallet address
         _safeMint(msg.sender, newTokenId);
-        
-        uint newCharacterPowerFactor = assignPowerFactor();
 
         // Map the new NFT to its character attributes
         nftCharacterAttributes[newTokenId] = Character({
@@ -147,8 +137,7 @@ contract TeamAmericaSlayers is ERC721 {
             imageURI: defaultCharacters[_characterIndex].imageURI,
             hp: defaultCharacters[_characterIndex].hp,
             maxHp: defaultCharacters[_characterIndex].maxHp,
-            attackDamage: defaultCharacters[_characterIndex].attackDamage,
-            powerFactor: newCharacterPowerFactor
+            attackDamage: defaultCharacters[_characterIndex].attackDamage
         });
 
         console.log("Minted NFT w/ TokenId %s using %s character.", newTokenId, defaultCharacters[_characterIndex].name);
@@ -178,7 +167,6 @@ contract TeamAmericaSlayers is ERC721 {
         string memory strHp = Strings.toString(charAttributes.hp);
         string memory strMaxHp = Strings.toString(charAttributes.maxHp);
         string memory strAttackDamage = Strings.toString(charAttributes.attackDamage);
-        string memory strPowerFactor = Strings.toString(charAttributes.powerFactor);
 
         // Pack our NFT character's attributes into a json formatted string
         string memory json = Base64.encode(
@@ -189,7 +177,7 @@ contract TeamAmericaSlayers is ERC721 {
                         '"description":"Join Team America and save the world! Battle the fierce boss and get nothing for it, maybe a thumbs up...",',
                         '"image":"',charAttributes.imageURI,'",',
                         '"attributes":[{"trait_type":"Health Points", "value":',strHp,',"max_value":',strMaxHp,'},',
-                        '{"trait_type":"Attack Damage","value":',strAttackDamage,'},{"trait_type": "Power Factor","value":',strPowerFactor,'}]}'
+                        '{"trait_type":"Attack Damage","value":',strAttackDamage,'}]}'
                     )
                 )
             )
