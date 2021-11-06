@@ -22,7 +22,7 @@ contract TeamAmericaSlayers is ERC721 {
     using SafeMath for uint256;
     // Events
     event CharacterMinted(address minter, uint tokenId, uint characterIndex);
-    event AttackComplete(uint newBossHp, uint newPlayerHp);
+    event AttackComplete(address player, uint newBossHp, uint newPlayerHp);
 
     // struct to store character attributes
     struct Character {
@@ -228,7 +228,7 @@ contract TeamAmericaSlayers is ERC721 {
                 bigBoss.hp, nftCharacterPlayed.name, nftCharacterPlayed.hp);
         }
 
-        emit AttackComplete(bigBoss.hp, nftCharacterPlayed.hp);
+        emit AttackComplete(msg.sender, bigBoss.hp, nftCharacterPlayed.hp);
     }
 
     // Character Selection
