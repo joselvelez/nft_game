@@ -36,7 +36,7 @@ const main = async () => {
         characterAttackDmg,
         // Boss attributes
         "Kim Jong-il",
-        "https://static.wikia.nocookie.net/teamamerica/images/c/c5/Kim-jong-il.png/revision/latest/scale-to-width-down/616?cb=20141102004837",
+        "https://static.wikia.nocookie.net/teamamerica/images/c/c5/Kim-jong-il.png",
         10000,
         50
     );

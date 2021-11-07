@@ -34,6 +34,24 @@ const charactersArray = [
         imageURI: 'https://static.wikia.nocookie.net/teamamerica/images/7/70/Samueljackson.png',
         hp: 190,
         attackDamage: 180,
+    },
+    {
+        name: "Lisa",
+        imageURI: 'https://static.wikia.nocookie.net/teamamerica/images/5/59/Lisa.png',
+        hp: 200,
+        attackDamage: 131,
+    },
+    {
+        name: "Martin Sheet",
+        imageURI: 'https://static.wikia.nocookie.net/teamamerica/images/3/32/Martinsheen.png',
+        hp: 120,
+        attackDamage: 196,
+    },
+    {
+        name: "Danny Glover",
+        imageURI: 'https://static.wikia.nocookie.net/teamamerica/images/2/2d/Dannyglover.png',
+        hp: 155,
+        attackDamage: 170,
     }
 ]
 
