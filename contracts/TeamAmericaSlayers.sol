@@ -23,6 +23,7 @@ contract TeamAmericaSlayers is ERC721 {
     // Events
     event CharacterMinted(address minter, uint tokenId, uint characterIndex);
     event AttackComplete(address player, uint newBossHp, uint newPlayerHp);
+    event CharacterRevived(uint tokenId);
 
     // struct to store character attributes
     struct Character {
@@ -287,5 +288,15 @@ contract TeamAmericaSlayers is ERC721 {
             }
             return result;
         }
+    }
+
+    //revive character
+    function reviveCharacter(uint _id) public {
+        require(assetToOwner[_id] == msg.sender, "You do not own this character!");
+        require(nftCharacterAttributes[_id].hp == 0, "You can squeeze a little more from this character...");
+
+        nftCharacterAttributes[_id].hp = nftCharacterAttributes[_id].maxHp;
+
+        emit CharacterRevived(_id);
     }
 }
